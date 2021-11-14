@@ -15,6 +15,9 @@ docker-compose run --rm frontend bash
 vue create .
 ```
 
+※リポジトリは作成しない
+※ver2 系
+
 ### backend
 
 ```
