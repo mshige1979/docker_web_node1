@@ -7,5 +7,5 @@ echo "npm install"
 npm install 
 
 #express起動
-echo "npx serve. "
-npx ts-node index.ts
+echo "npm start. "
+npm start
