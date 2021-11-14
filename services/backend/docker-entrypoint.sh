@@ -6,6 +6,6 @@ echo -e "$I Starting Express Server..."
 echo "npm install"
 npm install 
 
-#vue起動
-echo "yarn serve. "
-node index.js
+#express起動
+echo "npx serve. "
+npx ts-node index.ts
