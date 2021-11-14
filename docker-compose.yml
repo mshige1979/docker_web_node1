@@ -1,0 +1,109 @@
+version: "3"
+
+services:
+  # webサーバ
+  web:
+    # コンテナ名
+    container_name: web
+    # image
+    image: nginx:alpine
+    # コンテナの中に入る
+    tty: true
+    # 他のコンテナ起動後に起動するように制御
+    depends_on:
+      - frontend
+      - backend
+    # 環境変数
+    environment:
+      TZ: "Asia/Tokyo"
+    # ポート開放
+    ports:
+      - 80:80
+    # ボリューム
+    volumes:
+      - "./services/web/nginx.conf:/etc/nginx/nginx.conf"
+      - "./services/web/conf.d:/etc/nginx/conf.d"
+
+  # フロントエンドサーバ(vue)
+  frontend:
+    # コンテナ名
+    container_name: frontend
+    # build
+    build:
+      context: .
+      dockerfile: ./services/frontend/Dockerfile
+    # コンテナの中に入る
+    tty: true
+    # ボリューム
+    volumes:
+      - "./projects/frontend:/frontend"
+    # WORKDIR
+    working_dir: /frontend
+    # 環境変数
+    environment:
+      TZ: "Asia/Tokyo"
+    # ポート開放
+    ports:
+      - 5001:5000
+
+  # バックエンドサーバ(express)
+  backend:
+    #
+    # コンテナ名
+    container_name: backend
+    # build
+    build:
+      context: .
+      dockerfile: ./services/backend/Dockerfile
+    # コンテナの中に入る
+    tty: true
+    # 他のコンテナ起動後に起動するように制御
+    depends_on:
+      - db
+    # ボリューム
+    volumes:
+      - "./projects/backend:/backend"
+      - ./projects/db/tmp:/tmp/db
+    # WORKDIR
+    working_dir: /backend
+    # 環境変数
+    environment:
+      TZ: Asia/Tokyo
+      DATABASE_HOST: db
+      DATABASE_NAME: sample1
+      DATABASE_USER: root
+      DATABASE_PASSWORD: password
+      DATABASE_PORT: 3306
+    # ポート開放
+    ports:
+      - 3000:3000
+
+  # DBサーバ
+  db:
+    # コンテナ名
+    container_name: db
+    # build
+    build:
+      context: .
+      dockerfile: ./services/db/Dockerfile
+    # 環境設定
+    environment:
+      TZ: Asia/Tokyo
+      MYSQL_DATABASE: sample1
+      MYSQL_USER: root
+      MYSQL_PASSWORD: password
+    # コンテナの中に入る
+    tty: true
+    # ボリューム
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./services/db/sql:/docker-entrypoint-initdb.d
+      - ./projects/db/tmp:/tmp/db
+    # ポート開放
+    ports:
+      - 3306:3306
+
+# 名前付きボリュームをdockerホストの管理下で作成
+volumes:
+  #
+  mysql_data: {}
