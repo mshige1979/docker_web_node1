@@ -74,6 +74,7 @@ services:
       DATABASE_USER: root
       DATABASE_PASSWORD: password
       DATABASE_PORT: 3306
+      NODE_MODE: develop
     # ポート開放
     ports:
       - 3000:3000
